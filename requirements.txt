@@ -1,0 +1,5 @@
+streamlit
+google-cloud-aiplatform
+google-cloud-logging
+firebase-admin
+google-cloud-secret-manager
