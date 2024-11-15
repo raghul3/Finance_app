@@ -2,11 +2,12 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 from google.cloud import secretmanager
+import json
 
 # Initialize Google Cloud Secret Manager client
 def get_secret(secret_name):
     client = secretmanager.SecretManagerServiceClient()
-    project_id = 'regal-cursor-395010'
+    project_id = 'regal-cursor-395010'  # Replace with your GCP project ID
     secret_version = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     response = client.access_secret_version(name=secret_version)
     return response.payload.data.decode('UTF-8')
@@ -14,9 +15,12 @@ def get_secret(secret_name):
 # Retrieve the Firebase credentials from Secret Manager
 firebase_credentials_json = get_secret("firebase-credentials")
 
+# Parse the JSON string into a dictionary
+firebase_credentials_dict = json.loads(firebase_credentials_json)
+
 # Initialize Firebase if it hasn't been initialized yet
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_credentials_json)  # Use the credentials from Secret Manager
+    cred = credentials.Certificate(firebase_credentials_dict)  # Pass the dictionary directly
     firebase_admin.initialize_app(cred)
 
 # Initialize Firestore DB
